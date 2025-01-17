@@ -25,11 +25,11 @@ export class createUserDTO {
   @IsString()
   public password: string;
 
-  @ApiProperty({ description: 'Roles', required: true })
+  @ApiProperty({ description: 'Roles', required: false })
   @IsEnum(RoleEnum, { each: true })
   public roles: RoleEnum[];
 
-  @ApiProperty({ description: 'Status', required: true })
+  @ApiProperty({ description: 'Status', required: false })
   @IsEnum(StatusEnum)
   public status: StatusEnum;
 }

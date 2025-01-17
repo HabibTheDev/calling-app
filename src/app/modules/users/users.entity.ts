@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 import { RoleEnum, StatusEnum } from './users.interface';
 
 @Schema({ collection: 'users', timestamps: true })
@@ -21,3 +22,22 @@ export class UserEntity extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserEntity);
+export const UserModel = model<UserEntity>('User', UserSchema);
+
+// Pre-save hook to check if email already exists
+UserSchema.pre<UserEntity>('save', async function (next) {
+  const existingUser = await UserModel.findOne({ email: this.email });
+
+  if (existingUser) {
+    throw new Error(`Email ${this.email} already exists`);
+  }
+
+  // Hash password if modified
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  next();
+});
+
+export type UserDocument = UserEntity;
