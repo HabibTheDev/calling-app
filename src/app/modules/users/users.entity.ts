@@ -1,52 +1,23 @@
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 import { RoleEnum, StatusEnum } from './users.interface';
 
-@Entity('users')
-export class UserEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  public id!: string;
-
-  @Column({
-    type: 'varchar',
-    length: 255,
-    select: true,
-    unique: true,
-    nullable: false,
-  })
+@Schema({ collection: 'users', timestamps: true })
+export class UserEntity extends Document {
+  @Prop({ type: String, required: true, unique: true })
   public email!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Prop({ type: String, required: true })
   public username!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Prop({ type: String, required: true })
   public password!: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Prop({ type: String, enum: RoleEnum, default: RoleEnum.CUSTOMER })
   public role!: RoleEnum;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Prop({ type: String, enum: StatusEnum, default: StatusEnum.ACTIVE })
   public status!: StatusEnum;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    name: 'created_at',
-    select: true,
-    default: 'CURRENT_TIMESTAMP',
-  })
-  public createdAt!: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    name: 'updated_at',
-    select: true,
-    default: 'CURRENT_TIMESTAMP',
-  })
-  public updatedAt!: Date;
 }
+
+export const UserSchema = SchemaFactory.createForClass(UserEntity);
